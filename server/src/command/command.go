@@ -3,8 +3,9 @@ package command
 type SignificanceType int
 
 const (
-	Data	SignificanceType  = iot
+	Data	SignificanceType = iota
 	Flags
+	Prop
 )
 
 type Command struct {
@@ -16,5 +17,6 @@ type Command struct {
 type Significance struct {
 	Type SignificanceType
 	Content string
+	Name string
 }
 
