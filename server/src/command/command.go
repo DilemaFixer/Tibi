@@ -4,7 +4,7 @@ type SignificanceType int
 
 const (
 	Data	SignificanceType = iota
-	Flags
+	Flag
 	Prop
 )
 

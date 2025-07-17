@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-	_ , _ = com.parseToCommand("tibi comment add 15 Started working .some_var=true")
+	_ , _ = com.ParseToCommand("comment add Started_working .some_var=true")
 }
