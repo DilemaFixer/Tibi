@@ -10,25 +10,20 @@ func ParseToCommand(str string) (*Command , error) {
 	if str == "" || str == " " {
 		return nil , fmt.Errorf("Error parsing command , input is empty")
 	}
-	log.Println("User input:", str)
 	parts := split(str)
-	log.Println("Input parts:" , parts)
 	
 	command := &Command {
 		Command:parts[0],
 		Subcommand:"",
 		Significances:nil,
 	}
-	log.Println("Command ", parts[0])
 	partsCount := len(parts)
 	if partsCount > 1 {
-		log.Println("Subcommand :", parts[1])
 		command.Subcommand = parts[1]
 	}
 
 	if (partsCount - 2) != 0 {
 		signsStr := parts[2:]
-		log.Println("Signs :", signsStr)
 		signs := make([]Significance, 0)
 		//TODO: refactor this part of code , move it to new func
 		for _, signStr := range signsStr {
@@ -66,7 +61,6 @@ func ParseToCommand(str string) (*Command , error) {
 			}
 			signs = append(signs, sign)
 		}
-		fmt.Println("Signs :", signs)
 		command.Significances = signs
 	}
 
@@ -93,8 +87,6 @@ func split(str string) []string{
 	}
 
 	cutPoints = append(cutPoints , len(str))
-	log.Println("Cut points :" , cutPoints)
-
 	var result []string
 	for i := 0; i < len(cutPoints)-1; i++ {
 		start := cutPoints[i]
