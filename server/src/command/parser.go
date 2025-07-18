@@ -70,7 +70,7 @@ func ParseToCommand(str string) (*Command , error) {
 		command.Significances = signs
 	}
 
-	return nil , nil
+	return command , nil
 }
 
 func split(str string) []string{
