@@ -34,31 +34,19 @@ func ParseToCommand(str string) (*Command , error) {
 				if len(values) != 2 {
 					return nil , fmt.Errorf("Invalid var seter declaration")
 				}
-				sign := Significance {
-					Type:Prop,
-					Name:values[0],
-					Content:values[1],
-				}
+				sign := NewSignificance(Prop, values[0], values[1])
 				signs = append(signs, sign)
 				continue 
 			}
 
 			if strings.HasPrefix(signStr, "--") && signLenght > 2{
 				signStr = removeCharsFromBegine(signStr, 2)
-				sign := Significance {
-					Type:Flag,
-					Name:signStr,
-					Content:"",
-				}
+				sign := NewSignificance(Flag, signStr, "")	
 				signs = append(signs, sign)
 				continue
 			}
 			
-			sign := Significance {
-				Type:Data,
-				Name:"",
-				Content:signStr,
-			}
+			sign := NewSignificance(Data, "", signStr)	
 			signs = append(signs, sign)
 		}
 		command.Significances = signs

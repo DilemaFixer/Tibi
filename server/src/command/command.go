@@ -20,3 +20,18 @@ type Significance struct {
 	Name string
 }
 
+func NewSignificance(type SignificanceType, name string, content string) Significance {
+	return Significance {
+		Type:type,
+		Name:name,
+		Content:content,
+	}
+}
+
+func NewMinimalCommand(command string) *Command {
+	return &Command {
+		Command:command,
+		Subcommand:"",
+		Significances:nil,
+	}
+}
