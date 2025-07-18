@@ -12,11 +12,7 @@ func ParseToCommand(str string) (*Command , error) {
 	}
 	parts := split(str)
 	
-	command := &Command {
-		Command:parts[0],
-		Subcommand:"",
-		Significances:nil,
-	}
+	command := NewMinimalCommand(parts[0])
 	partsCount := len(parts)
 	if partsCount > 1 {
 		command.Subcommand = parts[1]
