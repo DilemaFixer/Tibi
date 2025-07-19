@@ -3,6 +3,7 @@ package command
 import (
 	"fmt"
 	"strings"
+	"unicode"
 )
 
 func ParseToCommand(str string) (*Command, error) {
@@ -114,8 +115,19 @@ func tryParseVarSeter(signs *[]Significance , str string , strlen int) (bool , e
 		return false, fmt.Errorf("Error parsing var seter : invalid var seter declaration")
 	}
 	sign := NewSignificance(Prop, values[0], values[1])
+	sign.TProp = getPropType(value[1]) 
 	*signs = append(*signs, sign)
 	return true, nil
+}
+
+func getPropType(value string) PropType {
+	for _, char := range value {
+		if !unicode.IsDigit() {
+			return String
+		}
+	}
+
+	return Number
 }
 
 func tryParseFlag(signs *[]Significance , str string , strlen int) bool {

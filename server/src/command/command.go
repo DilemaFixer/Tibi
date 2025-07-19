@@ -1,11 +1,17 @@
 package command
 
 type SignificanceType int
+type PropType int
 
 const (
 	Data SignificanceType = iota
 	Flag
 	Prop
+)
+
+const (
+	Number PropType = iota
+	String
 )
 
 type Command struct {
@@ -16,6 +22,7 @@ type Command struct {
 
 type Significance struct {
 	Type    SignificanceType
+	TProp PropType
 	Content string
 	Name    string
 }
