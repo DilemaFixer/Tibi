@@ -89,7 +89,6 @@ func (r *Router) Route(cmd Command) {
 	}
 
 	var point *EndPoint
-
 	for _, currentPoint := range group {
 		if currentPoint.name == cmd.Subcommand {
 			point = currentPoint
