@@ -18,6 +18,18 @@ func main() {
 	} else {
 		fmt.Println(command)
 	}
-	var r *com.Router
-	r.NewEndPointGroup("test").AddEndPoint("str", nil).EndFilling().EndFilling().NewEndPointGroup("test2")
+	r := com.NewRouter(errorHandler)
+	r.NewEndPointGroup("comment").AddEndPoint("add", test).EndFilling().EndFilling()
+	r.Route(*command)
+}
+
+func errorHandler(err error) {
+	fmt.Println(err)
+}
+
+func test(signs []com.Significance) error {
+	for _, sign := range signs {
+		fmt.Println(sign)
+	}
+	return nil
 }
