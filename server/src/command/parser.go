@@ -142,6 +142,7 @@ func tryParseFlag(signs *[]Significance, str string, strlen int) bool {
 
 func parseData(signs *[]Significance, str string) {
 	sign := NewSignificance(Data, "", str)
+	sign.TProp = getPropType(str)
 	*signs = append(*signs, sign)
 }
 
