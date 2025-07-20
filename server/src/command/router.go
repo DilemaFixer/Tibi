@@ -6,9 +6,10 @@ import (
 )
 
 type Router struct {
-	way          map[string][]*EndPoint
-	cache        map[string]EndPoint
-	errorHandler func(error)
+	way              map[string][]*EndPoint
+	cache            map[string]EndPoint
+	errorHandler     func(error)
+	endPointSelector func(Command, *EndPoint) bool
 }
 
 type EndPointsGroup struct {
@@ -23,11 +24,11 @@ type EndPoint struct {
 	isVarsEnable  bool
 	existFlags    []string
 	existVars     []Var
-	handler       func([]Significance) error
+	handler       func(ctx *Context) error
 }
 
 type Var struct {
-	TProp            PropType
+	TProp            DataType
 	HaveDefaultValue bool
 	Name             string
 	DefaultValue     string
@@ -36,13 +37,14 @@ type Var struct {
 
 func NewRouter(errorHandler func(error)) *Router {
 	return &Router{
-		way:          make(map[string][]*EndPoint, 0),
-		cache:        make(map[string]EndPoint, 0),
-		errorHandler: errorHandler,
+		way:              make(map[string][]*EndPoint, 0),
+		cache:            make(map[string]EndPoint, 0),
+		errorHandler:     errorHandler,
+		endPointSelector: defaultEndPointSelector,
 	}
 }
 
-func NewEndPoint(name string, handler func([]Significance) error, group EndPointsGroup) *EndPoint {
+func NewEndPoint(name string, handler func(*Context) error, group EndPointsGroup) *EndPoint {
 	return &EndPoint{
 		name:       name,
 		handler:    handler,
@@ -52,7 +54,7 @@ func NewEndPoint(name string, handler func([]Significance) error, group EndPoint
 	}
 }
 
-func NewVar(name string, tprop PropType, haveDefaultValue bool, defaultValue string, info string) Var {
+func NewVar(name string, tprop DataType, haveDefaultValue bool, defaultValue string, info string) Var {
 	return Var{
 		Name:             name,
 		TProp:            tprop,
@@ -84,19 +86,37 @@ func (r *Router) Route(cmd Command) {
 	group, exist := r.way[cmd.Command]
 
 	if !exist {
-		r.errorHandler(fmt.Errorf("Route error : can't find endpoint group with name %s", cmd.Command))
+		r.errorHandler(fmt.Errorf("Route error : can't find endpoint group with name '%s'", cmd.Command))
 		return
 	}
 
-	var point *EndPoint
+	if len(group) == 0 {
+		r.errorHandler(fmt.Errorf("Route error : comand gourp '%s' is empty", cmd.Command))
+		return
+	}
+
+	var targetPoint *EndPoint
 	for _, currentPoint := range group {
-		if currentPoint.name == cmd.Subcommand {
-			point = currentPoint
+		if r.endPointSelector(cmd, currentPoint) {
+			targetPoint = currentPoint
 			break
 		}
 	}
 
-	point.handler(cmd.Significances)
+	if targetPoint == nil {
+		r.errorHandler(fmt.Errorf("Routing error : not found command '%s' subcommand '%s'", cmd.Command, cmd.Subcommand))
+		return
+	}
+
+	ctx := RefinementToContext(cmd.Significances)
+	targetPoint.handler(ctx)
+}
+
+func defaultEndPointSelector(cmd Command, point *EndPoint) bool {
+	if cmd.Subcommand == point.name {
+		return true
+	}
+	return false
 }
 
 func validateCmd(cmd Command) error {
