@@ -1,13 +1,13 @@
 package command
 
-func (eg EndPointsGroup) AddEndPoint(name string, handler func([]Significance) error) *EndPoint {
+func (eg EndPointsGroup) AddEndPoint(name string, handler func(*Context) error) *EndPoint {
 	value, exist := eg.router.way[eg.name]
 
 	if !exist {
 		value = make([]*EndPoint, 0)
 	}
 	newEndPoint := NewEndPoint(name, handler, eg)
-	value = append(value, newEndPoint)
+	eg.router.way[eg.name] = append(value, newEndPoint)
 	return newEndPoint
 }
 

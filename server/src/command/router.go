@@ -24,7 +24,7 @@ type EndPoint struct {
 	isVarsEnable  bool
 	existFlags    []string
 	existVars     []Var
-	handler       func([]Significance) error
+	handler       func(ctx *Context) error
 }
 
 type Var struct {
@@ -33,12 +33,6 @@ type Var struct {
 	Name             string
 	DefaultValue     string
 	Info             string
-}
-
-type Context struct {
-	flags map[string]struct{}
-	vars  map[string]Var
-	data  [](DataType)
 }
 
 func NewRouter(errorHandler func(error)) *Router {
@@ -50,7 +44,7 @@ func NewRouter(errorHandler func(error)) *Router {
 	}
 }
 
-func NewEndPoint(name string, handler func([]Significance) error, group EndPointsGroup) *EndPoint {
+func NewEndPoint(name string, handler func(*Context) error, group EndPointsGroup) *EndPoint {
 	return &EndPoint{
 		name:       name,
 		handler:    handler,
@@ -92,19 +86,30 @@ func (r *Router) Route(cmd Command) {
 	group, exist := r.way[cmd.Command]
 
 	if !exist {
-		r.errorHandler(fmt.Errorf("Route error : can't find endpoint group with name %s", cmd.Command))
+		r.errorHandler(fmt.Errorf("Route error : can't find endpoint group with name '%s'", cmd.Command))
 		return
 	}
 
-	var point *EndPoint
+	if len(group) == 0 {
+		r.errorHandler(fmt.Errorf("Route error : comand gourp '%s' is empty", cmd.Command))
+		return
+	}
+
+	var targetPoint *EndPoint
 	for _, currentPoint := range group {
 		if r.endPointSelector(cmd, currentPoint) {
-			point = currentPoint
+			targetPoint = currentPoint
 			break
 		}
 	}
 
-	point.handler(cmd.Significances)
+	if targetPoint == nil {
+		r.errorHandler(fmt.Errorf("Routing error : not found command '%s' subcommand '%s'", cmd.Command, cmd.Subcommand))
+		return
+	}
+
+	ctx := RefinementToContext(cmd.Significances)
+	targetPoint.handler(ctx)
 }
 
 func defaultEndPointSelector(cmd Command, point *EndPoint) bool {
