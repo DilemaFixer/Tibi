@@ -27,9 +27,7 @@ func errorHandler(err error) {
 	fmt.Println(err)
 }
 
-func test(signs []com.Significance) error {
-	for _, sign := range signs {
-		fmt.Println(sign)
-	}
+func test(ctx *com.Context) error {
+	fmt.Println(ctx)
 	return nil
 }
