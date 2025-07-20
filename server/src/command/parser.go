@@ -119,7 +119,7 @@ func tryParseVarSeter(signs *[]Significance, str string, strlen int) (bool, erro
 	return true, nil
 }
 
-func getPropType(value string) PropType {
+func getPropType(value string) DataType {
 	for _, char := range value {
 		if !unicode.IsDigit(char) {
 			return String

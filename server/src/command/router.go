@@ -6,9 +6,10 @@ import (
 )
 
 type Router struct {
-	way          map[string][]*EndPoint
-	cache        map[string]EndPoint
-	errorHandler func(error)
+	way              map[string][]*EndPoint
+	cache            map[string]EndPoint
+	errorHandler     func(error)
+	endPointSelector func(Command, *EndPoint) bool
 }
 
 type EndPointsGroup struct {
@@ -27,18 +28,25 @@ type EndPoint struct {
 }
 
 type Var struct {
-	TProp            PropType
+	TProp            DataType
 	HaveDefaultValue bool
 	Name             string
 	DefaultValue     string
 	Info             string
 }
 
+type Context struct {
+	flags map[string]struct{}
+	vars  map[string]Var
+	data  [](DataType)
+}
+
 func NewRouter(errorHandler func(error)) *Router {
 	return &Router{
-		way:          make(map[string][]*EndPoint, 0),
-		cache:        make(map[string]EndPoint, 0),
-		errorHandler: errorHandler,
+		way:              make(map[string][]*EndPoint, 0),
+		cache:            make(map[string]EndPoint, 0),
+		errorHandler:     errorHandler,
+		endPointSelector: defaultEndPointSelector,
 	}
 }
 
@@ -52,7 +60,7 @@ func NewEndPoint(name string, handler func([]Significance) error, group EndPoint
 	}
 }
 
-func NewVar(name string, tprop PropType, haveDefaultValue bool, defaultValue string, info string) Var {
+func NewVar(name string, tprop DataType, haveDefaultValue bool, defaultValue string, info string) Var {
 	return Var{
 		Name:             name,
 		TProp:            tprop,
@@ -90,13 +98,20 @@ func (r *Router) Route(cmd Command) {
 
 	var point *EndPoint
 	for _, currentPoint := range group {
-		if currentPoint.name == cmd.Subcommand {
+		if r.endPointSelector(cmd, currentPoint) {
 			point = currentPoint
 			break
 		}
 	}
 
 	point.handler(cmd.Significances)
+}
+
+func defaultEndPointSelector(cmd Command, point *EndPoint) bool {
+	if cmd.Subcommand == point.name {
+		return true
+	}
+	return false
 }
 
 func validateCmd(cmd Command) error {
