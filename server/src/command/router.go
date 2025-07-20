@@ -1,5 +1,10 @@
 package command
 
+import (
+	"fmt"
+	"unicode"
+)
+
 type Router struct {
 	way          map[string][]*EndPoint
 	cache        map[string]EndPoint
@@ -68,4 +73,50 @@ func (r *Router) NewEndPointGroup(name string) EndPointsGroup {
 		name:   name,
 		router: r,
 	}
+}
+
+func (r *Router) Route(cmd Command) {
+	if err := validateCmd(cmd); err != nil {
+		r.errorHandler(err)
+		return
+	}
+
+	group, exist := r.way[cmd.Command]
+
+	if !exist {
+		r.errorHandler(fmt.Errorf("Route error : can't find endpoint group with name %s", cmd.Command))
+		return
+	}
+
+	var point *EndPoint
+
+	for _, currentPoint := range group {
+		if currentPoint.name == cmd.Subcommand {
+			point = currentPoint
+			break
+		}
+	}
+
+	point.handler(cmd.Significances)
+}
+
+func validateCmd(cmd Command) error {
+	if !hasVisibleChars(cmd.Command) {
+		return fmt.Errorf("Invalid cmd : cmd.Command is empty")
+	}
+
+	if !hasVisibleChars(cmd.Subcommand) {
+		return fmt.Errorf("Invalid cmd : cmd.Subcommand is empty")
+	}
+
+	return nil
+}
+
+func hasVisibleChars(s string) bool {
+	for _, r := range s {
+		if unicode.IsPrint(r) && !unicode.IsSpace(r) {
+			return true
+		}
+	}
+	return false
 }
