@@ -16,9 +16,9 @@ func ParseToCommand(str string) (*Command, error) {
 	parts := split(str)
 	command := NewMinimalCommand(parts[0])
 	setSubcommandIfCan(command, parts)
-	err := setSignificancesIfCan(command , parts)
+	err := setSignificancesIfCan(command, parts)
 	if err != nil {
-		return nil , err
+		return nil, err
 	}
 	return command, nil
 }
@@ -68,7 +68,6 @@ func split(str string) []string {
 	return result
 }
 
-
 func setSubcommandIfCan(command *Command, parts []string) {
 	partsCount := len(parts)
 	if partsCount > 1 {
@@ -100,29 +99,29 @@ func setSignificancesIfCan(command *Command, parts []string) error {
 	return nil
 }
 
-func tryParseVarSeter(signs *[]Significance , str string , strlen int) (bool , error) {
+func tryParseVarSeter(signs *[]Significance, str string, strlen int) (bool, error) {
 	if !strings.HasPrefix(str, ".") {
-		return false , nil
+		return false, nil
 	}
 
 	if strlen <= 1 {
 		return false, fmt.Errorf("Error parsing var seter : invalid format")
 	}
-	
+
 	str = removeCharsFromBegine(str, 1)
 	values := strings.Split(str, "=")
 	if len(values) != 2 {
 		return false, fmt.Errorf("Error parsing var seter : invalid var seter declaration")
 	}
 	sign := NewSignificance(Prop, values[0], values[1])
-	sign.TProp = getPropType(value[1]) 
+	sign.TProp = getPropType(values[1])
 	*signs = append(*signs, sign)
 	return true, nil
 }
 
 func getPropType(value string) PropType {
 	for _, char := range value {
-		if !unicode.IsDigit() {
+		if !unicode.IsDigit(char) {
 			return String
 		}
 	}
@@ -130,7 +129,7 @@ func getPropType(value string) PropType {
 	return Number
 }
 
-func tryParseFlag(signs *[]Significance , str string , strlen int) bool {
+func tryParseFlag(signs *[]Significance, str string, strlen int) bool {
 	if !strings.HasPrefix(str, "--") || strlen <= 2 {
 		return false
 	}
@@ -141,7 +140,7 @@ func tryParseFlag(signs *[]Significance , str string , strlen int) bool {
 	return true
 }
 
-func parseData(signs *[]Significance , str string) {
+func parseData(signs *[]Significance, str string) {
 	sign := NewSignificance(Data, "", str)
 	*signs = append(*signs, sign)
 }

@@ -22,7 +22,7 @@ type Command struct {
 
 type Significance struct {
 	Type    SignificanceType
-	TProp PropType
+	TProp   PropType
 	Content string
 	Name    string
 }
