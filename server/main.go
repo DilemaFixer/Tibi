@@ -11,7 +11,7 @@ func main() {
 	log.SetFlags(log.Lmsgprefix)
 	log.SetPrefix("[SERVER] ")
 
-	str := "comment add \"Started_working\" .some_var=true .some_varr=12 --some_flag"
+	str := "comment add \"Started_working\" 1 .some_var=true .some_varr=12 --some_flag"
 	command, err := com.ParseToCommand(str)
 	if err != nil {
 		fmt.Println(err)
@@ -28,6 +28,6 @@ func errorHandler(err error) {
 }
 
 func test(ctx *com.Context) error {
-	fmt.Println(ctx)
+	fmt.Println(ctx.Datas)
 	return nil
 }
