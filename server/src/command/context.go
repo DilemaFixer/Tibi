@@ -16,14 +16,14 @@ type InputVar struct {
 type Context struct {
 	flags map[string]struct{}
 	vars  map[string]InputVar
-	datas []InputData
+	Datas []InputData
 }
 
 func NewContext() *Context {
 	return &Context{
 		flags: make(map[string]struct{}),
 		vars:  make(map[string]InputVar),
-		datas: make([]InputData, 0),
+		Datas: make([]InputData, 0),
 	}
 }
 
@@ -39,7 +39,7 @@ func (ctx *Context) addDataToContext(_type DataType, value string) {
 		Type:  _type,
 		Value: value,
 	}
-	ctx.datas = append(ctx.datas, data)
+	ctx.Datas = append(ctx.Datas, data)
 }
 
 func (ctx *Context) addFlagToContexts(flag string) {
