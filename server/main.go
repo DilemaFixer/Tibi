@@ -1,33 +1,10 @@
 package main
 
 import (
-	"fmt"
-	"log"
-
-	com "github.com/DilemaFixer/Tibi/server/src/command"
+	_ "fmt"
+	_ "log"
 )
 
 func main() {
-	log.SetFlags(log.Lmsgprefix)
-	log.SetPrefix("[SERVER] ")
 
-	str := "comment add \"Started_working\" 1 .some_var=true .some_varr=12 --some_flag"
-	command, err := com.ParseToCommand(str)
-	if err != nil {
-		fmt.Println(err)
-	} else {
-		fmt.Println(command)
-	}
-	r := com.NewRouter(errorHandler)
-	r.NewEndPointGroup("comment").AddEndPoint("add", test).EndFilling().EndFilling()
-	r.Route(*command)
-}
-
-func errorHandler(err error) {
-	fmt.Println(err)
-}
-
-func test(ctx *com.Context) error {
-	fmt.Println(ctx.Datas)
-	return nil
 }
